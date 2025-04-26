@@ -1,4 +1,4 @@
-import React from "react"
+import { ToastContainer } from "react-toastify";
 
 interface TemplateProps {
     children: React.ReactNode;
@@ -20,7 +20,14 @@ export const Template:React.FC<TemplateProps> = ({children, loading = false}: Te
                     { children }
                 </div>
             <Footer />
-
+            <ToastContainer
+                position='top-right'
+                autoClose={7000}
+                hideProgressBar={false}
+                closeOnClick={true}
+                draggable={false}
+                pauseOnHover={true}
+            />
         </>
     )
 }

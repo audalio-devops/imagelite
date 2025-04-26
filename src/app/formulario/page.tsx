@@ -1,28 +1,25 @@
 'use client'
 
-import { Button, InputText, Template, RenderIf } from "@/components"
+import { Button, InputText, Template, RenderIf, useNotification, FieldError } from "@/components"
 import { useImageService } from "@/resources/image/image.service"
-import Link from "next/link"
 import { useFormik } from "formik"
-import React, { useState } from "react";
+import { useState } from "react";
+import { formScheme, FormProps, formValidationScheme } from "./formScheme";
+import Link from "next/link"
 
-interface FormProps {
-    name: string;
-    tags: string;
-    file: any;
-}
 
-const formScheme: FormProps = {name:'', tags:'', file:''}
 
 export default function FormularioPage() {
 
+    const notification = useNotification();
     const [loading, setLoading] = useState<boolean>(false);
     const [imagePreview, setImagePreview] = useState<string>();
     const service = useImageService();
 
     const formik = useFormik<FormProps>({
         initialValues: formScheme,
-        onSubmit: handleSubmit
+        onSubmit: handleSubmit,
+        validationSchema: formValidationScheme
     })
 
     async function handleSubmit(dados: FormProps) {
@@ -38,6 +35,8 @@ export default function FormularioPage() {
         formik.resetForm();
         setImagePreview('');
         setLoading(false);
+
+        notification.notify('Upload sent sucessfully', 'success');
     }
 
     function onFileUpload (event: React.ChangeEvent<HTMLInputElement>) {
@@ -60,6 +59,7 @@ export default function FormularioPage() {
                                     onChange={formik.handleChange} 
                                     value={formik.values.name}
                                     placeholder="Type the image's name" />
+                                    <FieldError error={formik.errors.name} />
                     </div>
 
                     <div className='mt-5 grid grid-cols-2'>
@@ -68,10 +68,12 @@ export default function FormularioPage() {
                                     onChange={formik.handleChange} 
                                     value={formik.values.tags}
                                     placeholder="Type the tags, comma separated" />
+                                    <FieldError error={formik.errors.tags} />
                     </div>
 
                     <div className='mt-5 grid grid-cols-1'>
                         <label className='block text-sm font-medium leading-6 text-gray-700'>Image: * </label>
+                        <FieldError error={formik.errors.file} />
                         <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-6">
                             <div className="text-center">
                                 <RenderIf condition={!imagePreview}>
